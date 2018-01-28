@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Session, PlayerCharacter, Campaign, Post
+
+admin.site.register((Session, PlayerCharacter, Campaign, Post))
