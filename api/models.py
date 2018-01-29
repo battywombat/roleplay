@@ -8,7 +8,9 @@ class PlayerCharacter(models.Model):
 
 class Campaign(models.Model):
     dm = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, default='')
     players = models.ManyToManyField(User, related_name='playing_in')
+    private = models.BooleanField(default=True)
 
 class Session(models.Model):
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)

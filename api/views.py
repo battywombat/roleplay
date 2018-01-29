@@ -15,3 +15,17 @@ def create_campaign(request):
         new_session.players.add(player)
     new_session.save()
     return HttpResponse(bytes(str(new_session.id), 'utf8'))
+
+def get_campaign(request, campaign_id):
+    campaign = Campaign.objects.get(id=campaign_id)
+    if campaign is None:
+        return HttpResponse(status=404)
+    if campaign.private:
+        user = request.user
+        if user != campaign.dm and user not in campaign.players.all():
+            return HttpResponse(status=403)
+    return HttpResponse({
+        'name': campaign.name,
+        'dm': campaign.dm.username,
+        'players': [p.username for p in campaign.players.all()]
+    })
