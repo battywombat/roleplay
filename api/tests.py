@@ -70,3 +70,24 @@ class CampaignTests(TestCase):
         self.client.login(username=self.user2.username, password='user2_password')
         res = self.client.get(f'/api/campaign/{self.campaign_public.id}')
         self.assertEqual(res.status_code, 200)
+    
+    def test_can_delete(self):
+        self.client.login(username=self.dm.username, password='dm_password')
+        res = self.client.post('/api/campaign/create', {
+            'players': [self.user1.id],
+        })
+        self.assertEqual(res.status_code, 200)
+        newid = int(res.content)
+        res2 = self.client.post(f'/api/campaign/{newid}', {
+            'command': 'delete'
+        })
+        self.assertEqual(res2.status_code, 200)
+        res3 = self.client.get(f'/api/campaign/{newid}')
+        self.assertEqual(res3.status_code, 404)
+
+    def test_unauth_cant_delete(self):
+        self.client.login(username=self.user1.username, password='user1_password')
+        res2 = self.client.post(f'/api/campaign/{self.campaign_public.id}', {
+            'command': 'delete'
+        })
+        self.assertEqual(res2.status_code, 403)
