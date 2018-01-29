@@ -1,14 +1,17 @@
 from django.http import HttpResponse
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from .models import Session, Campaign
 
 def create_campaign(request):
     if request.method != 'POST':
         return HttpResponse(status=405)
-    if request.user is None:
+    if isinstance(request.user, AnonymousUser):
         return HttpResponse(status=403)
-    players = [User.objects.get(id=x) for x in request.POST['players']]
+    if 'players' in request.POST:
+        players = (User.objects.get(id=x) for x in request.POST['players'])
+    else:
+        players = tuple()
     new_session = Campaign(dm=request.user)
     new_session.save()  # Must have an id before many to many relationships can be saved
     for player in players:

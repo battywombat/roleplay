@@ -35,6 +35,18 @@ class CampaignTests(TestCase):
         })
         self.assertEqual(res.status_code, 200)
         int(res.content)
+
+    def test_create_without_users(self):
+        self.client.login(username=self.dm.username, password='dm_password')
+        res = self.client.post('/api/campaign/create', {})
+        self.assertEqual(res.status_code, 200)
+        int(res.content)    
+    
+    def test_cannot_create_when_not_logged_in(self):
+        res = self.client.post('/api/campaign/create', {
+            'players': [],
+        })
+        self.assertEqual(res.status_code, 403)
     
     def test_cannot_get_private_while_not_logged_in(self):
         res = self.client.get(f'/api/campaign/{self.campaign_private.id}')
