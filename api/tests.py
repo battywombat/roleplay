@@ -106,3 +106,11 @@ class CampaignTests(TestCase):
         res3 = self.client.get(f'/api/campaign/{newid}')
         content = json.loads(res3.content)
         self.assertEqual(self.user1.username, content['dm'])
+
+    def test_bad_method(self):
+        res = self.client.put(f'/api/campaign/{self.campaign_public.id}')
+        self.assertEqual(res.status_code, 405)
+
+    def test_invalid_id(self):
+        res = self.client.get('/api/campaign/100000')
+        self.assertEqual(res.status_code, 404)
